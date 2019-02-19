@@ -21,7 +21,12 @@ public class Transformation {
     public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         projectionMatrix.identity();
         //// --- student code ---
+	float top = zNear * (float) Math.tan((Math.PI / 180) * (fov / 2));
+	float bottom = -top;
+	float right = top * (width / height);
+	float left = -right;
         
+        // return projectionMatrix.perspective(fov, width/height, zNear, zFar);
         return projectionMatrix;
     }
     
@@ -31,8 +36,38 @@ public class Transformation {
         Vector3f up = camera.getUp();
         viewMatrix.identity();
         //// --- student code ---
+	Vector3f x = new Vector3f();
+	Vector3f y = new Vector3f();
+	Vector3f z = new Vector3f();
+	// Scale z to be a unit vector (-z is towards the target)
+	cameraPos.sub(cameraTarget, z);
+	z = z.div(z.length());
 
-        return viewMatrix;
+	// Take the cross product of z and up to get x
+	z.cross(up, x);
+	x = x.div(x.length());
+
+	// Take the cross product of z and x to get y
+	z.cross(x, y);
+	y = y.div(y.length());
+
+	Vector3f trans = new Vector3f(x.negate().dot(cameraPos), y.negate().dot(cameraPos), z.negate().dot(cameraPos));
+	viewMatrix.m00(x.x());
+	viewMatrix.m01(x.y());
+	viewMatrix.m02(x.z());
+	viewMatrix.m03(trans.x);
+
+	viewMatrix.m10(y.x());
+	viewMatrix.m11(y.y());
+	viewMatrix.m12(y.z());
+	viewMatrix.m13(trans.y);
+
+	viewMatrix.m20(z.x());
+	viewMatrix.m21(z.y());
+	viewMatrix.m22(z.z());
+	viewMatrix.m23(trans.z);
+
+	return viewMatrix;
     }
     
     public Matrix4f getModelMatrix(GameItem gameItem){
