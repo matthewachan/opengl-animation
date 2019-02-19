@@ -41,7 +41,8 @@ public class Transformation {
         modelMatrix.identity();
         //// --- student code ---
 
-        return modelMatrix;
+	
+        return modelMatrix.translate(position).rotateXYZ(rotation);
     }
 
     public Matrix4f getModelViewMatrix(GameItem gameItem, Matrix4f viewMatrix) {

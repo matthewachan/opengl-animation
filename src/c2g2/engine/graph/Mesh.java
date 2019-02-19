@@ -164,8 +164,11 @@ public class Mesh {
     	//Do not change textco, norms, inds
     	//student code 
     	for (int i = 0; i < pos.length/3; i++) {
+		pos[3 * i] *= sx;
+		pos[3 * i + 1] *= sy;
+		pos[3 * i + 2] *= sz;
 
-		}   	
+	}   	
     	setMesh(pos, textco, norms, inds);
     }
     
@@ -175,7 +178,9 @@ public class Mesh {
     	//Do not change textco, norms, inds
     	//student code
     	for(int i=0; i< pos.length/3; i++){
-    		
+		pos[3 * i] += trans.x;
+		pos[3 * i + 1] += trans.y;
+		pos[3 * i + 2] += trans.z;
     	}
     	setMesh(pos, textco, norms, inds);
     }
@@ -186,7 +191,11 @@ public class Mesh {
     	//Do not change textco, norms, inds
     	//student code
     	for(int i=0; i< pos.length/3; i++){
-    		
+		Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
+		v.rotateAxis((float) Math.toRadians(angle), axis.x, axis.y, axis.z);
+		pos[3 * i] = v.x;
+		pos[3 * i + 1] = v.y;
+		pos[3 * i + 2] = v.z;
     	}
     	setMesh(pos, textco, norms, inds);
     }

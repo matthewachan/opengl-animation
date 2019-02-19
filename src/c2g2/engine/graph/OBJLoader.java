@@ -140,7 +140,6 @@ public class OBJLoader {
 
 	}
 
-
         return new Mesh(positions, textCoords, norms, indices);
     }
 
