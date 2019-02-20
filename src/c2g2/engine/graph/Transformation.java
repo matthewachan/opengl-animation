@@ -23,46 +23,14 @@ public class Transformation {
         //// --- student code ---
 	float aspect = width / height;
 	float tanFov = (float) Math.tan(fov / 2);
-	// float top = tanFov * zNear;
-	// float bottom = -top;
-	// float right = top * aspect;
-	// float left = -right;
         
 	projectionMatrix.zero();
 	projectionMatrix.m00(1 / (aspect * tanFov));
-	projectionMatrix.m11(1 / (tanFov));
+	projectionMatrix.m11(1 / tanFov);
 	projectionMatrix.m22((zNear + zFar) / (zNear - zFar));
 	projectionMatrix.m23(-1);
 	projectionMatrix.m32((2 * zFar * zNear) / (zNear - zFar));
-	// Matrix4f ortho = new Matrix4f();
-	// ortho.identity();
-	// ortho.m00(2 / (right - left));
-	// ortho.m11(2 / (top - bottom));
-	// ortho.m22(2 / (zNear - zFar));
-	// ortho.m03(-(right + left) / (right - left));
-	// ortho.m13(-(top + bottom) / (top - bottom));
-	// ortho.m23(-(zFar + zFar) / (zNear - zFar));
 
-	// Matrix4f perspective = new Matrix4f();
-	// perspective.zero();
-	// perspective.m00(zNear);
-	// perspective.m11(zNear);
-	// perspective.m22(zNear + zFar);
-	// perspective.m23(1);
-	// perspective.m32(-zNear * zFar);
-
-
-	// ortho.mul(perspective, projectionMatrix);
-	// return projectionMatrix;
-	
-	// projectionMatrix.zero();
-	// projectionMatrix.m00(2 * zNear / (right - left));
-	// projectionMatrix.m11(2 * zNear / (top - bottom));
-	// projectionMatrix.m20((right + left) / (left - right));
-	// projectionMatrix.m21((top + bottom) / (bottom - top));
-	// projectionMatrix.m22((zFar + zNear) / (zNear - zFar));
-	// projectionMatrix.m23(1);
-	// projectionMatrix.m32(-(2 * zFar * zNear) / (zNear - zFar));
 	return projectionMatrix;
     }
     
@@ -111,8 +79,6 @@ public class Transformation {
         Vector3f position = gameItem.getPosition();
         modelMatrix.identity();
         //// --- student code ---
-
-	
         return modelMatrix.translate(position).rotateXYZ(rotation);
     }
 

@@ -10,6 +10,8 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryUtil;
 
 public class Mesh {
@@ -205,8 +207,40 @@ public class Mesh {
     	//reset position of each point
     	//Do not change textco, norms, inds
     	//student code
+	
+	// n should be a unit vector
+	n.normalize();
+
+	Matrix4f m = new Matrix4f();
+	m.identity();
+
+	float a = n.x;
+	float b = n.y;
+	float c = n.z;
+
+	m.m00((float) (1 - 2 * Math.pow(a, 2)));
+	m.m01(-2 * a * b);
+	m.m02(-2 * a * c);
+
+	m.m10(-2 * a * b);
+	m.m11((float) (1 - 2 * Math.pow(b, 2)));
+	m.m12(-2 * b * c);
+
+	m.m20(-2 * a * c);
+	m.m21(-2 * b * c);
+	m.m22((float) (1 - 2 * Math.pow(c, 2)));
+	
+	// Translation component so plane is through the origin
+	m.m30(-2 * p.dot(n) * a);
+	m.m31(-2 * p.dot(n) * b);
+	m.m32(-2 * p.dot(n) * c);
+
     	for(int i=0; i< pos.length/3; i++){
-    		
+		Vector4f v = new Vector4f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2], 1);
+		v.mul(m);
+		pos[3 * i] = v.x;
+		pos[3 * i + 1] = v.y;
+		pos[3 * i + 2] = v.z;
     	}
     	setMesh(pos, textco, norms, inds);
     }
