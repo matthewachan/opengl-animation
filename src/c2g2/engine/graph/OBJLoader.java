@@ -30,8 +30,10 @@ public class OBJLoader {
 
 			vIdx[i - 1] = Integer.parseInt(infoGroup[0]);
 			// Texture and normal index info is optional
-			vtIdx[i - 1] = infoGroup[1].length() > 0 ? Integer.parseInt(infoGroup[1]) : 0;
-			vnIdx[i - 1] = infoGroup[2].length() > 0 ? Integer.parseInt(infoGroup[2]) : 0;
+			if (length > 1) {
+				vtIdx[i - 1] = infoGroup[1].length() > 0 ? Integer.parseInt(infoGroup[1]) : 0;
+				vnIdx[i - 1] = infoGroup[2].length() > 0 ? Integer.parseInt(infoGroup[2]) : 0;
+			}
 		}
 		
 		f.add(new Vector3f(vIdx[0] - 1, vIdx[1] - 1, vIdx[2] - 1));
