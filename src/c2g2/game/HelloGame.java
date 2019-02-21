@@ -3,6 +3,7 @@ package c2g2.game;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -49,7 +50,11 @@ public class HelloGame implements IGameLogic {
     private static final float CAMERA_POS_STEP = 0.05f;
     
     private int currentObj;
+    
+    private int nBranches = 5;
 
+    private boolean hasLeaves = false;
+    
     public HelloGame() {
         renderer = new Renderer();
         camera = new Camera();
@@ -63,15 +68,21 @@ public class HelloGame implements IGameLogic {
         renderer.init(window);
         float reflectance = 1f;        
         // NOTE: 
-        //   please uncomment following lines to test your OBJ Loader.
-	Mesh mesh = OBJLoader.loadMesh("src/resources/models/bunny.obj");
-        // Mesh mesh = new Mesh();  // comment this line when you enable OBJLoader
+        // //   please uncomment following lines to test your OBJ Loader.
+	String objFile = "src/resources/models/cone2.obj";
+	Mesh mesh = OBJLoader.loadMesh(objFile);
+	// mesh.translateMesh(new Vector3f(0, 0, 5));
+	mesh.scaleMesh(0.15f, 1, 0.15f);
+        // // Mesh mesh = new Mesh();  // comment this line when you enable OBJLoader
         Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), reflectance);
         
         mesh.setMaterial(material);
-        GameItem gameItem = new GameItem(mesh);
+        GameItem trunk = new GameItem(mesh);
+	trunk.setPosition(0, 0, 5);
+	// trunk.setScale(5);
 
-        gameItems = new GameItem[]{gameItem};
+	// int maxBranches = 0;
+	gameItems = new GameItem[]{trunk};
 
         // Set up lights in the scene
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
@@ -184,7 +195,7 @@ public class HelloGame implements IGameLogic {
         }
         else if(window.isKeyPressed(GLFW_KEY_8)){
             //rotation by manipulating mesh
-            gameItems[currentObj].getMesh().scaleMesh(1.001f,1.0f,1.0f);
+            gameItems[currentObj].getMesh().scaleMesh(1.0f,1.001f,1.0f);
         }
         else if(window.isKeyPressed(GLFW_KEY_7)){
             //rotation by manipulating mesh
@@ -207,6 +218,120 @@ public class HelloGame implements IGameLogic {
     public void update(float interval, MouseInput mouseInput) {
         // Update camera position
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+
+	// Student code below
+	boolean fullyGrown = true;
+
+	Random rng = new Random();
+	int rand = rng.nextInt(100);
+
+	// Create new branch
+	if (rand == 0 && nBranches > 0) {
+		// Resize GameItems array
+		GameItem[] items = new GameItem[gameItems.length + 1];
+		for (int i = 0; i < gameItems.length; ++i) {
+			items[i] = gameItems[i];
+		}
+		
+		// Parent new branch to a random branch
+		int range = gameItems.length - 1;
+		int idx = range < 5 ? 0 : rng.nextInt(range);
+		GameItem parent = gameItems[idx];
+
+		// Create new mesh
+		Mesh bMesh = new Mesh(parent.getMesh());
+		Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), 1f);
+		bMesh.setMaterial(material);
+
+		// Rotate mesh slightly
+		float angle = rng.nextInt(70);
+		angle += 20;
+		int neg = rng.nextInt(3);
+		float x = (float) rng.nextDouble();
+		float z = (float) rng.nextDouble();
+		if (neg == 0 || neg == 1)
+			x = -x;
+		if (neg == 0 || neg == 2)
+			z = -z;
+
+		Vector3f axis = new Vector3f(x, 0, z);
+		bMesh.rotateMesh(axis, angle);
+
+		// Change child GameItem accordingly
+		GameItem child = new GameItem(bMesh);
+		Vector3f center = parent.getCenter();
+		child.setPosition(parent.getPosition());
+		child.setScale(parent.getScale());
+		child.setRotation(parent.getRotation());
+	
+		// Push cone in the direction of it's tip
+		Vector3f tip = child.getTip();
+		tip = tip.rotateAxis((float) Math.toRadians(angle), axis.x, axis.y, axis.z);
+		child.setTip(tip);
+		bMesh.translateMesh(tip);
+		center = center.add(tip);
+		
+
+		// Scale cone down slightly
+		float scale = 0.3f + (float) rng.nextDouble() * (0.7f - 0.3f);
+		child.setMaxLength(parent.getLength() * scale);
+		bMesh.scaleMesh(.1f, .1f, .1f);
+		child.setLength(parent.getLength() * 0.1f);
+
+		// Push cone up or down along parent's y axis
+		float distance = -0.8f + (float) rng.nextDouble() * (0.1f + 0.5f);
+		Vector3f shiftUp = new Vector3f(0, child.getLength() * distance, 0);
+		bMesh.translateMesh(shiftUp);
+		center.add(shiftUp);
+
+		child.setCenter(center);
+		
+
+
+		items[items.length - 1] = child;
+		gameItems = items;
+
+		nBranches--;
+		System.out.println("Creating branch...");
+	}
+
+	for (GameItem item : gameItems) {
+		// scale branch if not maxed out
+		if (item.getLength() < item.getMaxLength()) {
+			float scaleFactor = 1 + (float) rng.nextDouble() * (1.1f - 1);
+			item.getMesh().scaleMesh(scaleFactor, scaleFactor, scaleFactor);
+			item.setLength(item.getLength() * scaleFactor);
+			fullyGrown = false;
+		}
+	}
+
+	if (nBranches == 0 && fullyGrown && !hasLeaves) {
+		String objFile = "src/resources/models/cloud.obj";
+		try {
+			Mesh mesh = OBJLoader.loadMesh(objFile);
+			mesh.translateMesh(gameItems[0].getTip());
+			mesh.scaleMesh(0.5f, 0.5f, 0.5f);
+			Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), 1f);
+			mesh.setMaterial(material);
+
+			// Resize GameItems array
+			GameItem[] items = new GameItem[gameItems.length + 1];
+			for (int i = 0; i < gameItems.length; ++i) {
+				items[i] = gameItems[i];
+			}
+
+			GameItem leaves = new GameItem(mesh);
+			leaves.setPosition(0, 0, 5);
+
+			items[items.length - 1] = leaves;
+			gameItems = items;
+			hasLeaves = true;
+		} catch (Exception e) {
+			System.out.println("Failed to load " + objFile);
+		}
+
+	}
+	
 
         // Update camera based on mouse            
         if (mouseInput.isLeftButtonPressed()) {

@@ -113,6 +113,26 @@ public class Mesh {
     	setMesh(positions, textCoords, normals, indices);        
     }
 
+    public Mesh(Mesh m) {
+	pos = new float[m.pos.length];
+	for (int i = 0; i < m.pos.length; ++i) {
+		pos[i] = m.pos[i];
+	}
+	textco = new float[m.textco.length];
+	for (int i = 0; i < m.textco.length; ++i) {
+		textco[i] = m.textco[i];
+	}
+	norms = new float[m.norms.length];
+	for (int i = 0; i < m.norms.length; ++i) {
+		norms[i] = m.norms[i];
+	}
+	inds = new int[m.inds.length];
+	for (int i = 0; i < m.inds.length; ++i) {
+		inds[i] = m.inds[i];
+	}
+	setMesh(pos, textco, norms, inds);
+    }
+
     public Material getMaterial() {
         return material;
     }
@@ -128,6 +148,7 @@ public class Mesh {
     public int getVertexCount() {
         return vertexCount;
     }
+
 
     public void render() {
     	// Draw the mesh
