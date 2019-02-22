@@ -51,7 +51,7 @@ public class HelloGame implements IGameLogic {
     
     private int currentObj;
     
-    private int nBranches = 5;
+    private int nBranches = 3;
 
     private boolean hasLeaves = false;
 
@@ -60,6 +60,8 @@ public class HelloGame implements IGameLogic {
     private Vector3f brown = new Vector3f(0.5f, 0.2f, 0);
 
     private Vector3f green = new Vector3f(0.4f, 0.7f, 0.2f);
+
+    private Vector3f blue = new Vector3f(0.0f, 0.7f, 1);
     
     public HelloGame() {
         renderer = new Renderer();
@@ -74,6 +76,19 @@ public class HelloGame implements IGameLogic {
         renderer.init(window);
         // NOTE: 
         // //   please uncomment following lines to test your OBJ Loader.
+	Mesh plane = OBJLoader.loadMesh("src/resources/models/plane.obj");
+	plane.setMaterial(new Material(green, 0.4f));
+	plane.rotateMesh(new Vector3f(1, 0, 0), 80);
+	plane.translateMesh(new Vector3f(0, -5, 0));
+	// plane.scaleMesh(0.1f, 0.1f, 0.1f);
+	GameItem floor = new GameItem(plane);
+	floor.setPosition(0, 0, 3);
+
+	Mesh bg = OBJLoader.loadMesh("src/resources/models/plane.obj");
+	bg.setMaterial(new Material(blue, 0.8f));
+	GameItem sky = new GameItem(bg);
+	sky.setPosition(0, 0, 20);
+
 	String objFile = "src/resources/models/cone2.obj";
 	Mesh mesh = OBJLoader.loadMesh(objFile);
 	// mesh.translateMesh(new Vector3f(0, 0, 5));
@@ -83,11 +98,11 @@ public class HelloGame implements IGameLogic {
         
         mesh.setMaterial(material);
         GameItem trunk = new GameItem(mesh);
-	trunk.setPosition(0, 0, 5);
+	trunk.setPosition(0, 0, 3);
 	// trunk.setScale(5);
 
 	// int maxBranches = 0;
-	gameItems = new GameItem[]{trunk};
+	gameItems = new GameItem[]{trunk, floor, sky};
 
         // Set up lights in the scene
         ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
@@ -236,7 +251,7 @@ public class HelloGame implements IGameLogic {
 	// gameItems[0].getMesh().setVertPos(index, vpos.add(new Vector3f(0, 1, 0)));
 
 	// Create new branch
-	if (rand == 0 && nBranches > 0) {
+	if (rand % 2 == 0  && nBranches > 0) {
 		// Resize GameItems array
 		GameItem[] items = new GameItem[gameItems.length + 1];
 		for (int i = 0; i < gameItems.length; ++i) {
@@ -283,10 +298,29 @@ public class HelloGame implements IGameLogic {
 		
 
 		// Scale cone down slightly
-		float scale = 0.3f + (float) rng.nextDouble() * (0.7f - 0.3f);
+		float scale = 0.3f + (float) rng.nextDouble() * (0.5f - 0.3f);
+		bMesh.scaleMesh(.5f, .5f, .5f);
+
+		child.setLength(parent.getLength() * 0.5f);
+		int tipIdx = bMesh.getTipIdx();
+		int baseIdx = bMesh.getBaseIdx();
+
+		Vector3f tipVert = bMesh.getVertPos(tipIdx);
+		Vector3f base = bMesh.getVertPos(baseIdx);
+
+		Vector3f up = new Vector3f();
+		tipVert.sub(base, up);
+
+		up = up.normalize();
+		up = up.mul(scale * child.getLength());
+
+		tipVert = tipVert.sub(up);
+
+		child.getMesh().setVertPos(tipIdx, tipVert);
+
+		child.setLength(child.getLength() - scale * child.getLength());
+
 		child.setMaxLength(parent.getLength() * scale);
-		bMesh.scaleMesh(.3f, .1f, .3f);
-		child.setLength(parent.getLength() * 0.1f);
 
 		// Push cone up or down along parent's y axis
 		float distance = -0.8f + (float) rng.nextDouble() * (0.1f + 0.5f);
@@ -307,7 +341,8 @@ public class HelloGame implements IGameLogic {
 	for (GameItem item : gameItems) {
 		// scale branch if not maxed out
 		if (item.getLength() < item.getMaxLength()) {
-			float scaleFactor = 0.01f + (float) rng.nextDouble() * (0.02f - 0.01f);
+			float speed = .1f;
+			float scaleFactor = (speed / 100) * 1f + (float) rng.nextDouble() * (2f - 1f) * (speed / 100);
 
 			Mesh mesh = item.getMesh();
 
@@ -340,8 +375,9 @@ public class HelloGame implements IGameLogic {
 		String objFile = "src/resources/models/cloud.obj";
 		try {
 			Mesh mesh = OBJLoader.loadMesh(objFile);
-			mesh.translateMesh(gameItems[0].getTip());
 			mesh.scaleMesh(0.5f, 0.5f, 0.5f);
+			mesh.translateMesh(gameItems[0].getTip());
+			mesh.translateMesh(new Vector3f(0, -0.6f, 0));
 			Material material = new Material(green, reflectance);
 			mesh.setMaterial(material);
 
@@ -352,7 +388,8 @@ public class HelloGame implements IGameLogic {
 			}
 
 			GameItem leaves = new GameItem(mesh);
-			leaves.setPosition(0, 0, 5);
+
+			leaves.setPosition(gameItems[0].getPosition());
 
 			items[items.length - 1] = leaves;
 			gameItems = items;
@@ -373,7 +410,8 @@ public class HelloGame implements IGameLogic {
         }
 
         // Update directional light direction, intensity and color
-        lightAngle += 1.1f;
+        // lightAngle += 1.1f;
+	lightAngle = 20;
         
         if (lightAngle > 90) {
             directionalLight.setIntensity(0);
