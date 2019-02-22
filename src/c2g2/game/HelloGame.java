@@ -55,6 +55,7 @@ public class HelloGame implements IGameLogic {
 
     private boolean hasLeaves = false;
 
+    private float reflectance = 0.2f;
 
     private Vector3f brown = new Vector3f(0.5f, 0.2f, 0);
 
@@ -71,7 +72,6 @@ public class HelloGame implements IGameLogic {
     @Override
     public void init(Window window) throws Exception {
         renderer.init(window);
-        float reflectance = 1f;        
         // NOTE: 
         // //   please uncomment following lines to test your OBJ Loader.
 	String objFile = "src/resources/models/cone2.obj";
@@ -79,7 +79,7 @@ public class HelloGame implements IGameLogic {
 	// mesh.translateMesh(new Vector3f(0, 0, 5));
 	mesh.scaleMesh(0.15f, 1, 0.15f);
         // // Mesh mesh = new Mesh();  // comment this line when you enable OBJLoader
-        Material material = new Material(brown, 0.2f);
+        Material material = new Material(brown, reflectance);
         
         mesh.setMaterial(material);
         GameItem trunk = new GameItem(mesh);
@@ -230,6 +230,11 @@ public class HelloGame implements IGameLogic {
 	Random rng = new Random();
 	int rand = rng.nextInt(100);
 
+	// int index = gameItems[0].getTipIdx();
+
+	// Vector3f vpos = gameItems[0].getMesh().getVertPos(index);
+	// gameItems[0].getMesh().setVertPos(index, vpos.add(new Vector3f(0, 1, 0)));
+
 	// Create new branch
 	if (rand == 0 && nBranches > 0) {
 		// Resize GameItems array
@@ -245,7 +250,7 @@ public class HelloGame implements IGameLogic {
 
 		// Create new mesh
 		Mesh bMesh = new Mesh(parent.getMesh());
-		Material material = new Material(brown, 0.3f);
+		Material material = new Material(brown, reflectance);
 		bMesh.setMaterial(material);
 
 		// Rotate mesh slightly
@@ -280,7 +285,7 @@ public class HelloGame implements IGameLogic {
 		// Scale cone down slightly
 		float scale = 0.3f + (float) rng.nextDouble() * (0.7f - 0.3f);
 		child.setMaxLength(parent.getLength() * scale);
-		bMesh.scaleMesh(.1f, .1f, .1f);
+		bMesh.scaleMesh(.3f, .1f, .3f);
 		child.setLength(parent.getLength() * 0.1f);
 
 		// Push cone up or down along parent's y axis
@@ -302,9 +307,31 @@ public class HelloGame implements IGameLogic {
 	for (GameItem item : gameItems) {
 		// scale branch if not maxed out
 		if (item.getLength() < item.getMaxLength()) {
-			float scaleFactor = 1 + (float) rng.nextDouble() * (1.1f - 1);
-			item.getMesh().scaleMesh(scaleFactor, scaleFactor, scaleFactor);
-			item.setLength(item.getLength() * scaleFactor);
+			float scaleFactor = 0.01f + (float) rng.nextDouble() * (0.02f - 0.01f);
+
+			Mesh mesh = item.getMesh();
+
+			int tipIdx = mesh.getTipIdx();
+			int baseIdx = mesh.getBaseIdx();
+
+			Vector3f tip = mesh.getVertPos(tipIdx);
+			Vector3f base = mesh.getVertPos(baseIdx);
+
+			Vector3f up = new Vector3f();
+			tip.sub(base, up);
+			System.out.println(tipIdx);
+			System.out.println(baseIdx);
+
+			up = up.normalize();
+			up = up.mul(scaleFactor);
+			
+			tip = tip.add(up);
+
+
+			item.getMesh().setVertPos(tipIdx, tip);
+
+			// item.getMesh().scaleMesh(scaleFactor, scaleFactor, scaleFactor);
+			item.setLength(item.getLength() + scaleFactor);
 			fullyGrown = false;
 		}
 	}
@@ -315,7 +342,7 @@ public class HelloGame implements IGameLogic {
 			Mesh mesh = OBJLoader.loadMesh(objFile);
 			mesh.translateMesh(gameItems[0].getTip());
 			mesh.scaleMesh(0.5f, 0.5f, 0.5f);
-			Material material = new Material(green, 0.3f);
+			Material material = new Material(green, reflectance);
 			mesh.setMaterial(material);
 
 			// Resize GameItems array

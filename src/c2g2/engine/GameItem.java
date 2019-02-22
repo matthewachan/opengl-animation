@@ -21,6 +21,9 @@ public class GameItem {
 
     private float maxLength;
 
+    private int tipIdx;
+    private int baseIdx;
+
     public GameItem(Mesh mesh) {
         this.mesh = mesh;
         position = new Vector3f(0, 0, 0);
@@ -29,7 +32,25 @@ public class GameItem {
 	tipPos = new Vector3f(0, 1, 0);
 	length = 2;
 	center = new Vector3f(0, 0, 0);
-	maxLength = 1;
+	maxLength = 2;
+
+	// Locate the tip of this mesh
+	float[] pos = this.mesh.getPos();
+	for (int i = 0; i < pos.length / 3; ++i) {
+		Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
+		if (v.y == 1)
+			tipIdx = i;
+		if (v.x == 0 && v.y == -1 && v.z == 0)
+			baseIdx = i;
+	}
+    }
+
+    public int getBaseIdx() {
+	    return baseIdx;
+    }
+
+    public int getTipIdx() {
+	    return tipIdx;
     }
 
     public float getMaxLength() {

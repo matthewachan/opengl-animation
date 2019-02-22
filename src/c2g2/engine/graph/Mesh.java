@@ -28,6 +28,9 @@ public class Mesh {
     private float[] textco;
     private float[] norms;
     private int[] inds;
+
+    private int baseIdx;
+    private int tipIdx;
     
     
     public Mesh(){
@@ -38,10 +41,21 @@ public class Mesh {
     }
     
     public void setMesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
+
+
     	pos = positions;
     	textco = textCoords;
     	norms = normals;
     	inds = indices;
+	
+	for (int i = 0; i < pos.length / 3; ++i) {
+		Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
+		if (tipIdx == 0 && v.y == 1)
+			tipIdx = i;
+		if (baseIdx == 0 && v.x == 0 && v.y == -1 && v.z == 0)
+			baseIdx = i;
+	}
+
     	FloatBuffer posBuffer = null;
         FloatBuffer textCoordsBuffer = null;
         FloatBuffer vecNormalsBuffer = null;
@@ -264,5 +278,34 @@ public class Mesh {
 		pos[3 * i + 2] = v.z;
     	}
     	setMesh(pos, textco, norms, inds);
+    }
+
+    public float[] getPos() {
+	    return pos;
+    }
+
+    public void changeTip(int tipIdx, float value) {
+	    pos[tipIdx] = value;
+    }
+
+    public Vector3f getVertPos(int idx) {
+	    Vector3f v = new Vector3f(pos[3 * idx], pos[3 * idx + 1], pos[3 * idx + 2]);
+	    return v;
+    }
+
+    public void setVertPos(int idx, Vector3f v) {
+	    System.out.println("Setting " + idx + " to " + v.y);
+	    pos[3 * idx] = v.x;
+	    pos[3 * idx + 1] = v.y;
+	    pos[3 * idx + 2] = v.z;
+	    setMesh(pos, textco, norms, inds);
+    }
+
+    public int getTipIdx() {
+	    return tipIdx;
+    }
+
+    public int getBaseIdx() {
+	    return baseIdx;
     }
 }
