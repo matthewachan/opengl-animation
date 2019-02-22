@@ -54,6 +54,11 @@ public class HelloGame implements IGameLogic {
     private int nBranches = 5;
 
     private boolean hasLeaves = false;
+
+
+    private Vector3f brown = new Vector3f(0.5f, 0.2f, 0);
+
+    private Vector3f green = new Vector3f(0.4f, 0.7f, 0.2f);
     
     public HelloGame() {
         renderer = new Renderer();
@@ -74,7 +79,7 @@ public class HelloGame implements IGameLogic {
 	// mesh.translateMesh(new Vector3f(0, 0, 5));
 	mesh.scaleMesh(0.15f, 1, 0.15f);
         // // Mesh mesh = new Mesh();  // comment this line when you enable OBJLoader
-        Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), reflectance);
+        Material material = new Material(brown, 0.2f);
         
         mesh.setMaterial(material);
         GameItem trunk = new GameItem(mesh);
@@ -240,7 +245,7 @@ public class HelloGame implements IGameLogic {
 
 		// Create new mesh
 		Mesh bMesh = new Mesh(parent.getMesh());
-		Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), 1f);
+		Material material = new Material(brown, 0.3f);
 		bMesh.setMaterial(material);
 
 		// Rotate mesh slightly
@@ -285,8 +290,6 @@ public class HelloGame implements IGameLogic {
 		center.add(shiftUp);
 
 		child.setCenter(center);
-		
-
 
 		items[items.length - 1] = child;
 		gameItems = items;
@@ -295,6 +298,7 @@ public class HelloGame implements IGameLogic {
 		System.out.println("Creating branch...");
 	}
 
+	// @TODO: Instead of scaling, translate the tip's coordinates
 	for (GameItem item : gameItems) {
 		// scale branch if not maxed out
 		if (item.getLength() < item.getMaxLength()) {
@@ -311,7 +315,7 @@ public class HelloGame implements IGameLogic {
 			Mesh mesh = OBJLoader.loadMesh(objFile);
 			mesh.translateMesh(gameItems[0].getTip());
 			mesh.scaleMesh(0.5f, 0.5f, 0.5f);
-			Material material = new Material(new Vector3f(0.2f, 0.5f, 0.5f), 1f);
+			Material material = new Material(green, 0.3f);
 			mesh.setMaterial(material);
 
 			// Resize GameItems array
@@ -326,10 +330,10 @@ public class HelloGame implements IGameLogic {
 			items[items.length - 1] = leaves;
 			gameItems = items;
 			hasLeaves = true;
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			System.out.println("Failed to load " + objFile);
 		}
-
 	}
 	
 
