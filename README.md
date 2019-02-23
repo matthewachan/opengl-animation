@@ -18,6 +18,33 @@ To run the creative scene, run the following command (the ant build target for t
 $ ant anim
 ```
 
+## Part 1
+The first part of the assignment loads a simple triangle mesh. You can use the following keys to manipulate the mesh.
+
+| Key | Action                                                |
+|-----|-------------------------------------------------------|
+| Q   | Select next GameObject                                |
+| W   | Select previous GameObject                            |
+| E   | Scale current GameObject up                           |
+| R   | Scale current GameObject down                         |
+| T   | Translate current GameObject right                    |
+| Y   | Translate current GameObject left                     |
+| U   | Translate current GameObject up                       |
+| I   | Translate current GameObject down                     |
+| O   | Translate current GameObject forward                  |
+| P   | Translate current GameObject backward                 |
+| A   | Rotate current GameObject positively about the x-axis |
+| S   | Rotate current GameObject negatively about the x-axis |
+| D   | Rotate current GameObject positively about the y-axis |
+| F   | Rotate current GameObject negatively about the y-axis |
+| G   | Rotate current GameObject positively about the z-axis |
+| H   | Rotate current GameObject negatively about the z-axis |
+| 0   | Translate the current GameObject's mesh               |
+| 1   | Take a screenshot                                     |
+| 7   | Reflect the current GameObject's mesh                 |
+| 8   | Scale the current GameObject's mesh                   |
+| 9   | Rotate the current GameObject's mesh                  |
+
 ## Creative Scene
 
 ### OBJ Files
