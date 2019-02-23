@@ -13,74 +13,13 @@ public class GameItem {
 
     private final Vector3f rotation;
 
-    private Vector3f tipPos;
-
-    private float length;
-
-    private Vector3f center;
-
     private float maxLength;
-
-    private int tipIdx;
-    private int baseIdx;
 
     public GameItem(Mesh mesh) {
         this.mesh = mesh;
         position = new Vector3f(0, 0, 0);
         scale = 1;
         rotation = new Vector3f(0, 0, 0);
-	tipPos = new Vector3f(0, 1, 0);
-	length = 2;
-	center = new Vector3f(0, 0, 0);
-	maxLength = 2;
-
-	// Locate the tip of this mesh
-	float[] pos = this.mesh.getPos();
-	for (int i = 0; i < pos.length / 3; ++i) {
-		Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
-		if (v.y == 1)
-			tipIdx = i;
-		if (v.x == 0 && v.y == -1 && v.z == 0)
-			baseIdx = i;
-	}
-    }
-
-    public int getBaseIdx() {
-	    return baseIdx;
-    }
-
-    public int getTipIdx() {
-	    return tipIdx;
-    }
-
-    public float getMaxLength() {
-	    return maxLength;
-    }
-    public void setMaxLength(float max) {
-	    maxLength = max;
-    }
-    public Vector3f getCenter() {
-	    return center;
-    }
-
-    public void setCenter(Vector3f c) {
-	    center = c;
-    }
-
-    public float getLength() {
-	    return length;
-    }
-
-    public void setLength(float len) {
-	    length = len;
-    }
-
-    public Vector3f getTip() {
-	    return tipPos;
-    }
-
-    public void setTip(Vector3f v) {
-	    tipPos = v;
     }
 
     public Vector3f getPosition() {
@@ -98,6 +37,7 @@ public class GameItem {
         this.position.y = p.y;
         this.position.z = p.z;
     }
+
     public float getScale() {
         return scale;
     }
@@ -110,17 +50,16 @@ public class GameItem {
         return rotation;
     }
 
-    public void setRotation(Vector3f r) {
-        this.rotation.x = r.x;
-        this.rotation.y = r.y;
-        this.rotation.z = r.z;
-
-    }
-
     public void setRotation(float x, float y, float z) {
         this.rotation.x = x;
         this.rotation.y = y;
         this.rotation.z = z;
+    }
+
+    public void setRotation(Vector3f r) {
+        this.rotation.x = r.x;
+        this.rotation.y = r.y;
+        this.rotation.z = r.z;
     }
     
     public Mesh getMesh() {

@@ -2,7 +2,7 @@
     <property name="author" value="Changxi Zheng" />
 
     <property name="build.dir" value="${basedir}/build" />
-    <property name="lwjgl.dir" value="/usr/local/lib/lwjgl-release-3.2.1" />
+    <property name="lwjgl.dir" value="${basedir}/lib/lwjgl" />
     <property name="build.classdir" value="${build.dir}/classes" />
     <property name="build.distdir" value="${buildd.ir}/dist" />
 
@@ -59,6 +59,16 @@
             optimize="on" verbose="${verbose}" includeantruntime="false">
             <classpath refid="class.path" />
         </javac>
+    </target>
+
+    <target name="anim" depends="build.pa1">
+        <java classname="c2g2.game.TreeAnim" fork="true">
+            <classpath>
+                <path refid="class.path"/>
+                <pathelement path="${build.classdir}"/>
+            </classpath>
+            <jvmarg value="-XstartOnFirstThread"/>
+        </java>
     </target>
 
     <target name="run" depends="build.pa1">
