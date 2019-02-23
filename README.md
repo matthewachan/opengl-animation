@@ -19,7 +19,9 @@ $ ant anim
 ```
 
 ## Part 1
-The first part of the assignment loads a simple triangle mesh. You can use the following keys to manipulate the mesh.
+The first part of the assignment loads a simple triangle mesh. I have chosen to load a 3D model of a bunny.
+
+You can use the following keys to manipulate the mesh.
 
 | Key | Action                                                |
 |-----|-------------------------------------------------------|
