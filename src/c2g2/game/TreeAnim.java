@@ -10,7 +10,7 @@ public class TreeAnim {
             boolean vSync = true;
 	    System.out.println("Loading tree animation...");
             IGameLogic gameLogic = new HelloAnim();
-            GameEngine gameEng = new GameEngine("COMSW4160-PA1", 600, 480, vSync, gameLogic);
+            GameEngine gameEng = new GameEngine("COMSW4160-PA1", 960, 540, vSync, gameLogic);
             gameEng.start();
         } catch (Exception excp) {
             excp.printStackTrace();
