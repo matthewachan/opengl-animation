@@ -62,14 +62,17 @@ public class Mesh {
 	}
 
 
+	// Get vertex position array
 	public float[] getPos() {
 		return pos;
 	}
 
+	// Get the index of the cone tip vertex in the position array
 	public int getTipIdx() {
 		return tipIdx;
 	}
 
+	// Get the index of the cone base vertex in the position array
 	public int getBaseIdx() {
 		return baseIdx;
 	}
@@ -88,6 +91,7 @@ public class Mesh {
 		setMesh(pos, textco, norms, inds);
 	}
 
+	// Locate the tip and base position vertices (only checked when the object is first spawned)
 	private void parseIndices(float[] pos) {
 		for (int i = 0; i < pos.length / 3; ++i) {
 			Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
@@ -264,9 +268,11 @@ public class Mesh {
 		cleanUp();
 		//reset position of each point
 		//Do not change textco, norms, inds
+		
 		//student code
 		for(int i=0; i< pos.length/3; i++){
 			Vector3f v = new Vector3f(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]);
+			// Rotate the point about an axis by the given angle
 			v.rotateAxis((float) Math.toRadians(angle), axis.x, axis.y, axis.z);
 			pos[3 * i] = v.x;
 			pos[3 * i + 1] = v.y;
@@ -284,6 +290,7 @@ public class Mesh {
 		// n should be a unit vector
 		n.normalize();
 
+		// Apply formula for reflecting about a plane 
 		Matrix4f m = new Matrix4f();
 		m.identity();
 
@@ -303,7 +310,7 @@ public class Mesh {
 		m.m21(-2 * b * c);
 		m.m22((float) (1 - 2 * Math.pow(c, 2)));
 
-		// Translation component so plane is through the origin
+		// Add translation component so plane is through the origin
 		m.m30(-2 * p.dot(n) * a);
 		m.m31(-2 * p.dot(n) * b);
 		m.m32(-2 * p.dot(n) * c);

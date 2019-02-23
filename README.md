@@ -75,3 +75,7 @@ The `Branch` class extends `GameItem` to add additional fields such as `center`,
 `TreeAnim` is a modified version of Main for running the animation.
 
 **Note**: I have also added fields and functions to the `Mesh` class to modify the position coordinates of the vertex representing the tip of the cone. This allows me to easily "grow" the branch by translating the tip of the `Mesh`.
+
+## References
+- Formula for reflection across a plane: [https://math.stackexchange.com/questions/693414/reflection-across-the-plane](https://math.stackexchange.com/questions/693414/reflection-across-the-plane)
+- Formula for perspective projection matrix: [https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix](https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/opengl-perspective-projection-matrix)

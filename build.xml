@@ -61,6 +61,7 @@
         </javac>
     </target>
 
+    <!-- Build target for Creative Scene -->
     <target name="anim" depends="build.pa1">
         <java classname="c2g2.game.TreeAnim" fork="true">
             <classpath>
@@ -71,6 +72,7 @@
         </java>
     </target>
 
+    <!-- Main build target for bunny -->
     <target name="run" depends="build.pa1">
         <java classname="c2g2.game.Main" fork="true">
             <classpath>

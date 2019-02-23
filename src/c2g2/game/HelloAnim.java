@@ -43,9 +43,11 @@ public class HelloAnim implements IGameLogic {
 
 	private int currentObj;
 
+	// Number of branches to spawn on the tree trunk
 	private int nBranches = 3;
 	private boolean hasLeaves = false;
 
+	// Colors for the tree and background scenery
 	private Vector3f brown = new Vector3f(0.5f, 0.2f, 0);
 	private Vector3f green = new Vector3f(0.4f, 0.7f, 0.2f);
 	private Vector3f blue = new Vector3f(0.0f, 0.7f, 1);
@@ -240,9 +242,8 @@ public class HelloAnim implements IGameLogic {
 				items[i] = gameItems[i];
 			}
 
-			// Parent new branch to a random branch
-			int range = gameItems.length - 1;
-			int idx = range < 5 ? 0 : rng.nextInt(range);
+			// Parent new branch to the tree trunk
+			int idx = 0;
 			GameItem parent = gameItems[idx];
 			Branch trunk = (Branch) parent;
 
@@ -260,24 +261,22 @@ public class HelloAnim implements IGameLogic {
 			float yAngle = rng.nextInt(360);
 			bMesh.rotateMesh(new Vector3f(0, 1, 0), yAngle);
 
-			// Change child GameItem accordingly
+			// Create child GameItem
 			Branch child = new Branch(bMesh);
 			Vector3f center = trunk.getCenter();
 			child.setPosition(parent.getPosition());
 			child.setScale(parent.getScale());
 			child.setRotation(parent.getRotation());
 
-			// Push cone in the direction of it's tip
+			// Push cone in the direction of its tip
 			int tipIdx = bMesh.getTipIdx();
 			Vector3f tip = bMesh.getVertPos(tipIdx);
-			// tip = tip.rotateAxis((float) Math.toRadians(angle), axis.x, axis.y, axis.z);
 
 			bMesh.setVertPos(tipIdx, tip);
 			bMesh.translateMesh(tip);
 			center = center.add(tip);
 
-
-			// Scale cone down slightly
+			// Scale the cone down slightly
 			float scale = 0.3f + (float) rng.nextDouble() * (0.5f - 0.3f);
 			float factor = 0.4f;
 			bMesh.scaleMesh(factor, factor, factor);
@@ -299,7 +298,6 @@ public class HelloAnim implements IGameLogic {
 			child.getMesh().setVertPos(tipIdx, tipVert);
 
 			child.setLength(child.getLength() - scale * child.getLength());
-
 			child.setMaxLength(trunk.getLength() * scale);
 
 			// Push cone up or down along parent's y axis
@@ -310,19 +308,22 @@ public class HelloAnim implements IGameLogic {
 
 			child.setCenter(center);
 
+			// Append the child to the GameItems array
 			items[items.length - 1] = child;
 			gameItems = items;
-
 			nBranches--;
 			System.out.println("Creating branch...");
 		}
 
+		// Grow each branch if it has not reached its maximum length
 		for (int i = 3; i < gameItems.length; ++i) {
+			// Don't scale out the tree leaves
 			if (hasLeaves && i == gameItems.length - 1)
 				break;
 
 			Branch branch = (Branch) gameItems[i];
 			if (branch.getLength() < branch.getMaxLength()) {
+				// Branch growth speed
 				float speed = .3f;
 				float scaleFactor = (speed / 100) * 1f + (float) rng.nextDouble() * (2f - 1f) * (speed / 100);
 
@@ -349,12 +350,14 @@ public class HelloAnim implements IGameLogic {
 			}
 		}
 
+		// Spawn tree leaves if all of the branches are fully grown
 		if (nBranches == 0 && fullyGrown && !hasLeaves) {
 			String objFile = "src/resources/models/cloud.obj";
 			try {
 				Mesh mesh = OBJLoader.loadMesh(objFile);
 				mesh.scaleMesh(0.5f, 0.5f, 0.5f);
 
+				// Place tree leaves on the tip of the trunk
 				Mesh trunkMesh = gameItems[0].getMesh();
 				int tipIdx = trunkMesh.getTipIdx();
 				mesh.translateMesh(trunkMesh.getVertPos(tipIdx));
@@ -391,7 +394,6 @@ public class HelloAnim implements IGameLogic {
 		}
 
 		// Update directional light direction, intensity and color
-		// lightAngle += 1.1f;
 		lightAngle = 20;
 
 		if (lightAngle > 90) {

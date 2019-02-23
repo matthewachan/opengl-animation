@@ -3,6 +3,8 @@ package c2g2.engine;
 import org.joml.Vector3f;
 import c2g2.engine.graph.Mesh;
 
+// Branch class adds additional fields and methods to make
+// 3D transformations like scaling, translation, and rotation easier
 public class Branch extends GameItem  {
 
 	private float length;
